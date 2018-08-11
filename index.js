@@ -70,7 +70,7 @@ function monstersDown() {
 
 function bulletsUp() {
     data.bullets.forEach(function (bullet) {
-        bullet.y -= 5;
+        bullet.y -= 20;
     });
 }
 
@@ -138,47 +138,56 @@ function removeMonstersHitByBullets() {
     });
 }
 
-let currentKeyCode = undefined;
+let currentKeyCodes = [];
 
 document.addEventListener("keydown", function (event) {
-    currentKeyCode = event.keyCode;
+    const keyCode = event.keyCode;
+    if (!contains(currentKeyCodes, keyCode)) {
+        currentKeyCodes.push(keyCode);
+    }
 });
-document.addEventListener("keyup", function () {
-    currentKeyCode = undefined;
+
+document.addEventListener("keyup", function (event) {
+    const keyCode = event.keyCode;
+    currentKeyCodes = currentKeyCodes.filter(function (code) {
+        return keyCode !== code;
+    })
 });
+
+function contains(array, item) {
+    return array.indexOf(item) !== -1;
+}
 
 function moveSpaceship() {
     const [LEFT, RIGHT, UP, DOWN, SPACE] = [37, 39, 38, 40, 32];
-    if (currentKeyCode === undefined) return;
+    if (currentKeyCodes.length === 0) return;
     const step = 10;
-    switch (currentKeyCode) {
-        case LEFT:
-            data.ship.x -= step;
-            if (data.ship.x <= 0) {
-                data.ship.x = canvas.width;
-            }
-            break;
-        case RIGHT:
-            data.ship.x += step;
-            if (data.ship.x >= canvas.width) {
-                data.ship.x = 0;
-            }
-            break;
-        case UP:
-            data.ship.y -= step;
-            if (data.ship.y <= 0) {
-                data.ship.y = canvas.height;
-            }
-            break;
-        case DOWN:
-            data.ship.y += step;
-            if (data.ship.y >= canvas.height) {
-                data.ship.y = 0;
-            }
-            break;
-        case SPACE :
-            generateNewBullet();
-            break;
+    if (contains(currentKeyCodes, LEFT)) {
+        data.ship.x -= step;
+        if (data.ship.x <= 0) {
+            data.ship.x = canvas.width;
+        }
+    }
+    if (contains(currentKeyCodes, RIGHT)) {
+        data.ship.x += step;
+        if (data.ship.x >= canvas.width) {
+            data.ship.x = 0;
+        }
+    }
+    if (contains(currentKeyCodes, UP)) {
+        data.ship.y -= step;
+        if (data.ship.y <= 0) {
+            data.ship.y = canvas.height;
+        }
+    }
+    if (contains(currentKeyCodes, DOWN)) {
+        data.ship.y += step;
+        if (data.ship.y >= canvas.height) {
+            data.ship.y = 0;
+        }
+    }
+    if (contains(currentKeyCodes, SPACE)) {
+        generateNewBullet();
     }
 }
 
