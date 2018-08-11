@@ -148,15 +148,27 @@ function moveSpaceship() {
     switch (currentKeyCode) {
         case LEFT:
             data.ship.x -= step;
+            if (data.ship.x <= 0) {
+                data.ship.x = canvas.width;
+            }
             break;
         case RIGHT:
             data.ship.x += step;
+            if (data.ship.x >= canvas.width) {
+                data.ship.x = 0;
+            }
             break;
         case UP:
             data.ship.y -= step;
+            if (data.ship.y <= 0) {
+                data.ship.y = canvas.height;
+            }
             break;
         case DOWN:
             data.ship.y += step;
+            if (data.ship.y >= canvas.height) {
+                data.ship.y = 0;
+            }
             break;
         case SPACE :
             generateNewBullet();
