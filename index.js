@@ -3,7 +3,7 @@ const ctx = canvas.getContext("2d");
 ctx.beginPath();
 
 const data = {
-    ship: {x: 400, y: 400},
+    ship: {x: 400, y: 400, size: 50},
     rocks: [
         {x: 200, y: 200},
         {x: 300, y: 500},
@@ -17,7 +17,7 @@ const data = {
 
 function drawSpaceship(x, y) {
     ctx.fillStyle = "#FF0000";
-    const size = 50;
+    const size = data.ship.size;
     ctx.fillRect(x, y, size, size);
 }
 
@@ -54,8 +54,15 @@ function redrawAll() {
 
 drawAll();
 
+function generateNewBullet() {
+    data.bullets.push({
+        x: data.ship.x + (data.ship.size / 2),
+        y: data.ship.y
+    })
+}
+
 document.addEventListener("keydown", function (event) {
-    const [LEFT, RIGHT, UP, DOWN] = [37, 39, 38, 40];
+    const [LEFT, RIGHT, UP, DOWN, SPACE] = [37, 39, 38, 40, 32];
     switch (event.keyCode) {
         case LEFT:
             data.ship.x -= 3;
@@ -68,6 +75,9 @@ document.addEventListener("keydown", function (event) {
             break;
         case DOWN:
             data.ship.y += 3;
+            break;
+        case SPACE :
+            generateNewBullet();
             break;
     }
 });
