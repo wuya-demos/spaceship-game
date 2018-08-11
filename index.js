@@ -21,10 +21,11 @@ function drawSpaceship(x, y) {
     ctx.fillRect(x, y, size, size);
 }
 
+const rockSize = 30;
+
 function drawRock(x, y) {
     ctx.fillStyle = "#000000";
-    const size = 30;
-    ctx.fillRect(x, y, size, size);
+    ctx.fillRect(x, y, rockSize, rockSize);
 }
 
 function drawBullet(x, y) {
@@ -108,9 +109,35 @@ function generateNewRocks() {
     }
 }
 
+function isCrashedByRock(rock) {
+    const rockCenter = {
+        x: rock.x + rockSize / 2,
+        y: rock.y + rockSize / 2
+    };
+    const shipCenter = {
+        x: data.ship.x + data.ship.size / 2,
+        y: data.ship.y + data.ship.size / 2
+    };
+
+    const minDistance = (rockSize + data.ship.size) / 2;
+    const invalidX = Math.abs(rockCenter.x - shipCenter.x) < minDistance;
+    const invalidY = Math.abs(rockCenter.y - shipCenter.y) < minDistance;
+    return invalidX && invalidY;
+}
+
+function isCrashed() {
+    return data.rocks.some(function (rock) {
+        return isCrashedByRock(rock)
+    });
+}
+
 setInterval(function () {
-    rocksDown();
-    bulletsUp();
-    generateNewRocks();
-    redrawAll();
+    if (isCrashed()) {
+        // stop
+    } else {
+        rocksDown();
+        bulletsUp();
+        generateNewRocks();
+        redrawAll();
+    }
 }, 50);
