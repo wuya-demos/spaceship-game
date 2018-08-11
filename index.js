@@ -164,9 +164,14 @@ function moveSpaceship() {
     }
 }
 
+let gameOver = false;
+
 setInterval(function () {
+    if (gameOver) return;
+
     moveSpaceship();
     if (isCrashed()) {
+        gameOver = true;
         showGameOver();
     } else {
         rocksDown();
