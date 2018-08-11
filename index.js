@@ -131,9 +131,15 @@ function isCrashed() {
     });
 }
 
+function showGameOver() {
+    ctx.font = "80px Arial";
+    ctx.fillStyle = "#FF0000";
+    ctx.fillText("Game Over", 200, 300);
+}
+
 setInterval(function () {
     if (isCrashed()) {
-        // stop
+        showGameOver();
     } else {
         rocksDown();
         bulletsUp();
