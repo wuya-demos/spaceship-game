@@ -166,6 +166,22 @@ function moveSpaceship() {
 
 let gameOver = false;
 
+function isInScreen(square) {
+    return (square.y + square.size) >= 0 && square.y <= canvas.height;
+}
+
+function removeRocksOutOfScreen() {
+    data.rocks = data.rocks.filter(function (rock) {
+        return isInScreen(rock);
+    })
+}
+
+function removeBulletsOutOfScreen() {
+    data.bullets = data.bullets.filter(function (bullet) {
+        return isInScreen(bullet);
+    })
+}
+
 setInterval(function () {
     if (gameOver) return;
 
@@ -178,6 +194,8 @@ setInterval(function () {
         bulletsUp();
         generateNewRocks();
         removeRocksHitByBullets();
+        removeRocksOutOfScreen();
+        removeBulletsOutOfScreen();
         redrawAll();
     }
 }, 50);
