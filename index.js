@@ -4,32 +4,38 @@ ctx.beginPath();
 
 const data = {
     ship: {x: 400, y: 400, size: 50},
-    rocks: [],
+    monsters: [],
     bullets: []
 };
 
-generateRock();
-generateRock();
-generateRock();
+generateMonster();
+generateMonster();
+generateMonster();
+
+const spaceshipImage = new Image();
+spaceshipImage.src = './images/spaceship.png';
+
+const monsterImage = new Image();
+monsterImage.src = './images/monster.png';
+
+const bulletImage = new Image();
+bulletImage.src = './images/bullet.png';
 
 function drawSpaceship(ship) {
-    ctx.fillStyle = "#FF0000";
-    ctx.fillRect(ship.x, ship.y, ship.size, ship.size);
+    ctx.drawImage(spaceshipImage, ship.x, ship.y, ship.size, ship.size);
 }
 
-function drawRock(rock) {
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(rock.x, rock.y, rock.size, rock.size);
+function drawMonster(monster) {
+    ctx.drawImage(monsterImage, monster.x, monster.y, monster.size, monster.size);
 }
 
 function drawBullet(bullet) {
-    ctx.fillStyle = "#0000FF";
-    ctx.fillRect(bullet.x, bullet.y, bullet.size, bullet.size);
+    ctx.drawImage(bulletImage, bullet.x, bullet.y, bullet.size, bullet.size);
 }
 
 function drawAll() {
-    data.rocks.forEach(function (rock) {
-        drawRock(rock);
+    data.monsters.forEach(function (monster) {
+        drawMonster(monster);
     });
     data.bullets.forEach(function (bullet) {
         drawBullet(bullet);
@@ -56,9 +62,9 @@ function generateNewBullet() {
     })
 }
 
-function rocksDown() {
-    data.rocks.forEach(function (rock) {
-        rock.y += 5;
+function monstersDown() {
+    data.monsters.forEach(function (monster) {
+        monster.y += 5;
     });
 }
 
@@ -73,23 +79,23 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
 
-function generateRock() {
-    data.rocks.push({
+function generateMonster() {
+    data.monsters.push({
         x: getRandomInt(canvas.width),
         y: 0,
         size: 30
     })
 }
 
-function generateNewRocks() {
+function generateNewMonsters() {
     if (getRandomInt(8) === 0) {
-        generateRock();
+        generateMonster();
     }
 }
 
 function isCrashed() {
-    return data.rocks.some(function (rock) {
-        return isHit(rock, data.ship)
+    return data.monsters.some(function (monster) {
+        return isHit(monster, data.ship)
     });
 }
 
@@ -114,18 +120,18 @@ function isHit(square1, square2) {
     return invalidX && invalidY;
 }
 
-function removeRocksHitByBullets() {
-    const deadRocks = [], deadBullets = [];
-    data.rocks.forEach(function (rock) {
+function removeMonstersHitByBullets() {
+    const deadMonsters = [], deadBullets = [];
+    data.monsters.forEach(function (monster) {
         data.bullets.forEach(function (bullet) {
-            if (isHit(rock, bullet)) {
-                deadRocks.push(rock);
+            if (isHit(monster, bullet)) {
+                deadMonsters.push(monster);
                 deadBullets.push(bullet);
             }
         });
     });
-    data.rocks = data.rocks.filter(function (rock) {
-        return deadRocks.indexOf(rock) === -1;
+    data.monsters = data.monsters.filter(function (monster) {
+        return deadMonsters.indexOf(monster) === -1;
     });
     data.bullets = data.bullets.filter(function (bullet) {
         return deadBullets.indexOf(bullet) === -1;
@@ -182,9 +188,9 @@ function isInScreen(square) {
     return (square.y + square.size) >= 0 && square.y <= canvas.height;
 }
 
-function removeRocksOutOfScreen() {
-    data.rocks = data.rocks.filter(function (rock) {
-        return isInScreen(rock);
+function removeMonstersOutOfScreen() {
+    data.monsters = data.monsters.filter(function (monster) {
+        return isInScreen(monster);
     })
 }
 
@@ -202,11 +208,11 @@ setInterval(function () {
         gameOver = true;
         showGameOver();
     } else {
-        rocksDown();
+        monstersDown();
         bulletsUp();
-        generateNewRocks();
-        removeRocksHitByBullets();
-        removeRocksOutOfScreen();
+        generateNewMonsters();
+        removeMonstersHitByBullets();
+        removeMonstersOutOfScreen();
         removeBulletsOutOfScreen();
         redrawAll();
     }
