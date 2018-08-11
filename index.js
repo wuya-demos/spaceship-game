@@ -56,27 +56,6 @@ function generateNewBullet() {
     })
 }
 
-document.addEventListener("keydown", function (event) {
-    const [LEFT, RIGHT, UP, DOWN, SPACE] = [37, 39, 38, 40, 32];
-    switch (event.keyCode) {
-        case LEFT:
-            data.ship.x -= 3;
-            break;
-        case RIGHT:
-            data.ship.x += 3;
-            break;
-        case UP:
-            data.ship.y -= 3;
-            break;
-        case DOWN:
-            data.ship.y += 3;
-            break;
-        case SPACE :
-            generateNewBullet();
-            break;
-    }
-});
-
 function rocksDown() {
     data.rocks.forEach(function (rock) {
         rock.y += 5;
@@ -153,7 +132,40 @@ function removeRocksHitByBullets() {
     });
 }
 
+let currentKeyCode = undefined;
+
+document.addEventListener("keydown", function (event) {
+    currentKeyCode = event.keyCode;
+});
+document.addEventListener("keyup", function () {
+    currentKeyCode = undefined;
+});
+
+function moveSpaceship() {
+    const [LEFT, RIGHT, UP, DOWN, SPACE] = [37, 39, 38, 40, 32];
+    if (currentKeyCode === undefined) return;
+    const step = 10;
+    switch (currentKeyCode) {
+        case LEFT:
+            data.ship.x -= step;
+            break;
+        case RIGHT:
+            data.ship.x += step;
+            break;
+        case UP:
+            data.ship.y -= step;
+            break;
+        case DOWN:
+            data.ship.y += step;
+            break;
+        case SPACE :
+            generateNewBullet();
+            break;
+    }
+}
+
 setInterval(function () {
+    moveSpaceship();
     if (isCrashed()) {
         showGameOver();
     } else {
