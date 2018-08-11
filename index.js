@@ -4,44 +4,37 @@ ctx.beginPath();
 
 const data = {
     ship: {x: 400, y: 400, size: 50},
-    rocks: [
-        {x: 200, y: 200},
-        {x: 300, y: 500},
-        {x: 600, y: 100}
-    ],
-    bullets: [
-        {x: 140, y: 100},
-        {x: 400, y: 200}
-    ]
+    rocks: [],
+    bullets: []
 };
 
-function drawSpaceship(x, y) {
+generateRock();
+generateRock();
+generateRock();
+
+function drawSpaceship(ship) {
     ctx.fillStyle = "#FF0000";
-    const size = data.ship.size;
-    ctx.fillRect(x, y, size, size);
+    ctx.fillRect(ship.x, ship.y, ship.size, ship.size);
 }
 
-const rockSize = 30;
-
-function drawRock(x, y) {
+function drawRock(rock) {
     ctx.fillStyle = "#000000";
-    ctx.fillRect(x, y, rockSize, rockSize);
+    ctx.fillRect(rock.x, rock.y, rock.size, rock.size);
 }
 
-function drawBullet(x, y) {
+function drawBullet(bullet) {
     ctx.fillStyle = "#0000FF";
-    const size = 5;
-    ctx.fillRect(x, y, size, size);
+    ctx.fillRect(bullet.x, bullet.y, bullet.size, bullet.size);
 }
 
 function drawAll() {
     data.rocks.forEach(function (rock) {
-        drawRock(rock.x, rock.y);
+        drawRock(rock);
     });
     data.bullets.forEach(function (bullet) {
-        drawBullet(bullet.x, bullet.y);
+        drawBullet(bullet);
     });
-    drawSpaceship(data.ship.x, data.ship.y);
+    drawSpaceship(data.ship);
 }
 
 function clearCanvas() {
@@ -58,7 +51,8 @@ drawAll();
 function generateNewBullet() {
     data.bullets.push({
         x: data.ship.x + (data.ship.size / 2),
-        y: data.ship.y
+        y: data.ship.y,
+        size: 5
     })
 }
 
@@ -100,34 +94,23 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
 
-function generateNewRocks() {
-    if (getRandomInt(8) === 0) {
-        data.rocks.push({
-            x: getRandomInt(canvas.width),
-            y: 0
-        })
-    }
+function generateRock() {
+    data.rocks.push({
+        x: getRandomInt(canvas.width),
+        y: 0,
+        size: 30
+    })
 }
 
-function isCrashedByRock(rock) {
-    const rockCenter = {
-        x: rock.x + rockSize / 2,
-        y: rock.y + rockSize / 2
-    };
-    const shipCenter = {
-        x: data.ship.x + data.ship.size / 2,
-        y: data.ship.y + data.ship.size / 2
-    };
-
-    const minDistance = (rockSize + data.ship.size) / 2;
-    const invalidX = Math.abs(rockCenter.x - shipCenter.x) < minDistance;
-    const invalidY = Math.abs(rockCenter.y - shipCenter.y) < minDistance;
-    return invalidX && invalidY;
+function generateNewRocks() {
+    if (getRandomInt(8) === 0) {
+        generateRock();
+    }
 }
 
 function isCrashed() {
     return data.rocks.some(function (rock) {
-        return isCrashedByRock(rock)
+        return isHit(rock, data.ship)
     });
 }
 
@@ -137,6 +120,39 @@ function showGameOver() {
     ctx.fillText("Game Over", 200, 300);
 }
 
+function isHit(square1, square2) {
+    function centerX(square) {
+        return square.x + square.size / 2;
+    }
+
+    function centerY(square) {
+        return square.y + square.size / 2;
+    }
+
+    const minDistance = (square1.size + square2.size) / 2;
+    const invalidX = Math.abs(centerX(square1) - centerX(square2)) < minDistance;
+    const invalidY = Math.abs(centerY(square1) - centerY(square2)) < minDistance;
+    return invalidX && invalidY;
+}
+
+function removeRocksHitByBullets() {
+    const deadRocks = [], deadBullets = [];
+    data.rocks.forEach(function (rock) {
+        data.bullets.forEach(function (bullet) {
+            if (isHit(rock, bullet)) {
+                deadRocks.push(rock);
+                deadBullets.push(bullet);
+            }
+        });
+    });
+    data.rocks = data.rocks.filter(function (rock) {
+        return deadRocks.indexOf(rock) === -1;
+    });
+    data.bullets = data.bullets.filter(function (bullet) {
+        return deadBullets.indexOf(bullet) === -1;
+    });
+}
+
 setInterval(function () {
     if (isCrashed()) {
         showGameOver();
@@ -144,6 +160,7 @@ setInterval(function () {
         rocksDown();
         bulletsUp();
         generateNewRocks();
+        removeRocksHitByBullets();
         redrawAll();
     }
 }, 50);
