@@ -94,8 +94,23 @@ function bulletsUp() {
     });
 }
 
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+}
+
+function generateNewRocks() {
+    if (getRandomInt(8) === 0) {
+        data.rocks.push({
+            x: getRandomInt(canvas.width),
+            y: 0
+        })
+    }
+}
+
 setInterval(function () {
     rocksDown();
     bulletsUp();
+    generateNewRocks();
     redrawAll();
 }, 50);
