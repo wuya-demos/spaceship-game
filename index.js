@@ -2,12 +2,23 @@ const canvas = document.getElementById("my-canvas");
 const ctx = canvas.getContext("2d");
 ctx.beginPath();
 
-let shipX = 400, shipY = 400;
+const data = {
+    ship: {x: 400, y: 400},
+    rocks: [
+        {x: 200, y: 200},
+        {x: 300, y: 500},
+        {x: 600, y: 100}
+    ],
+    bullets: [
+        {x: 140, y: 100},
+        {x: 400, y: 200}
+    ]
+};
 
-function drawSpaceship() {
+function drawSpaceship(x, y) {
     ctx.fillStyle = "#FF0000";
     const size = 50;
-    ctx.fillRect(shipX, shipY, size, size);
+    ctx.fillRect(x, y, size, size);
 }
 
 function drawRock(x, y) {
@@ -22,19 +33,15 @@ function drawBullet(x, y) {
     ctx.fillRect(x, y, size, size);
 }
 
-
 function drawAll() {
-    drawRock(200, 200);
-    drawRock(300, 500);
-    drawRock(600, 100);
-
-    drawBullet(140, 100);
-    drawBullet(400, 200);
-
-    drawSpaceship();
+    data.rocks.forEach(function (rock) {
+        drawRock(rock.x, rock.y);
+    });
+    data.bullets.forEach(function (bullet) {
+        drawBullet(bullet.x, bullet.y);
+    });
+    drawSpaceship(data.ship.x, data.ship.y);
 }
-
-drawAll();
 
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -45,44 +52,23 @@ function redrawAll() {
     drawAll();
 }
 
-function moveLeft() {
-    shipX -= 3;
-    redrawAll();
-}
-
-function moveRight() {
-    shipX += 3;
-    redrawAll();
-}
-
-function moveUp() {
-    shipY -= 3;
-    redrawAll();
-}
-
-function moveDown() {
-    shipY += 3;
-    redrawAll();
-}
+drawAll();
 
 document.addEventListener("keydown", function (event) {
-    const LEFT = 37;
-    const RIGHT = 39;
-    const UP = 38;
-    const DOWN = 40;
-
+    const [LEFT, RIGHT, UP, DOWN] = [37, 39, 38, 40];
     switch (event.keyCode) {
         case LEFT:
-            moveLeft();
+            data.ship.x -= 3;
             break;
         case RIGHT:
-            moveRight();
+            data.ship.x += 3;
             break;
         case UP:
-            moveUp();
+            data.ship.y -= 3;
             break;
         case DOWN:
-            moveDown();
+            data.ship.y += 3;
             break;
     }
+    redrawAll();
 });
