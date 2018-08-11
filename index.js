@@ -70,5 +70,22 @@ document.addEventListener("keydown", function (event) {
             data.ship.y += 3;
             break;
     }
-    redrawAll();
 });
+
+function rocksDown() {
+    data.rocks.forEach(function (rock) {
+        rock.y += 5;
+    });
+}
+
+function bulletsUp() {
+    data.bullets.forEach(function (bullet) {
+        bullet.y -= 5;
+    });
+}
+
+setInterval(function () {
+    rocksDown();
+    bulletsUp();
+    redrawAll();
+}, 50);
